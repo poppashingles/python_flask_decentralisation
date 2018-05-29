@@ -23,6 +23,16 @@ def fetch_posts():
         global posts
         posts = sorted(content, key=lambda k: k['timestamp'], reverse = True)
 
+@app.route('/')
+def index():
+    fetch_posts()
+    return render_template('index.html',
+                           title= 'YourNet: Decentralized '
+                                  'content sharing',
+                           posts=posts,
+                           node_address=CONNECTED_NODE_ADDRESS,
+                           readable_time=timestamp_to_string)
+
 @app.route('/submit', methods=['POST'])
 def submit_textarea():
     post_content = request.form["content"]
@@ -40,3 +50,6 @@ def submit_textarea():
                   headers={'Content-type': 'application/json'})
 
     return redirect('/')
+
+def timestamp_to_string(epoch_time):
+    return datetime.datetime.fromtimestamp(epoch_time).strftime('%H:%M')
